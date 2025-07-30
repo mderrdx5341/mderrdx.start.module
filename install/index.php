@@ -4,14 +4,16 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\EventManager;
 
 class mderrdx_start_module extends CModule
 {
+    public $MODULE_ID = 'mderrdx.start.module';
+
     public function __construct()
     {
         include(__DIR__ . '/version.php');
 
-        $this->MODULE_ID = 'mderrdx.start.module';
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
@@ -19,10 +21,24 @@ class mderrdx_start_module extends CModule
         $this->MODULE_DESCRIPTION = 'Шаблон модуля для bitrix - CopyPaste';
     }
 
-    public function getModuleDependens()
+    private function getModuleDependens(): array 
     {
         return [
             'iblock' => '00.00.00',
+        ];
+    }
+
+    private function moduleEvents(): array
+    {
+        //TODO: нужное заменить
+        return [
+            [
+                "module" =>"main",
+                "event" => "OnUserTypeBuildList",
+                "this_module" => $this->MODULE_ID,
+                "class_name" => "ClassName",
+                "method_name" =>  "ClassMethod"
+            ],
         ];
     }
 
@@ -126,6 +142,36 @@ class mderrdx_start_module extends CModule
             return str_ireplace(Application::getDocumentRoot(), '', dirname(__DIR__));
         } else {
             return dirname(__DIR__);
+        }
+    }
+
+    public function InstallEvents()
+    {
+        $eventManager = EventManager::getInstance();
+        foreach($this->moduleEvents() as $event)
+        {
+            $eventManager->registerEventHandlerCompatible(
+                $event["module"],
+                $event["event"],
+                $event["this_module"],
+                $event["class_name"],
+                $event["method_name"]
+            );
+        }
+    }
+
+    public function UnInstallEvents()
+    {
+        $eventManager = EventManager::getInstance();
+        foreach($this->moduleEvents() as $event)
+        {
+            $eventManager->unRegisterEventHandler(
+                $event["module"],
+                $event["event"],
+                $event["this_module"],
+                $event["class_name"],
+                $event["method_name"]
+            );
         }
     }
 }
