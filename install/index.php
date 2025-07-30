@@ -8,6 +8,7 @@ use Bitrix\Main\EventManager;
 
 class mderrdx_start_module extends CModule
 {
+    //TODO: название директории
     public $MODULE_ID = 'mderrdx.start.module';
 
     public function __construct()
@@ -16,11 +17,15 @@ class mderrdx_start_module extends CModule
 
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-
+        //TODO: название модуля и описание
         $this->MODULE_NAME = 'Шаблоны модуля bitrix - CopyPaste';
         $this->MODULE_DESCRIPTION = 'Шаблон модуля для bitrix - CopyPaste';
     }
 
+    /**
+     * Зависимости от других модулей и их версий
+     * Дополнить или удалить
+     */
     private function getModuleDependens(): array 
     {
         return [
@@ -28,16 +33,19 @@ class mderrdx_start_module extends CModule
         ];
     }
 
+    /**
+     * TODO: Заполнить этот массив, для добавления и удаления событий, что бы при удалении не оставался мусор в списке событий
+     * Дополнить или удалить
+     */
     private function moduleEvents(): array
     {
-        //TODO: нужное заменить
         return [
             [
                 "module" =>"main",
                 "event" => "OnUserTypeBuildList",
                 "this_module" => $this->MODULE_ID,
-                "class_name" => "ClassName",
-                "method_name" =>  "ClassMethod"
+                "class_name" => "ClassName", //TODO: Имя класса с namespace '\Mderrdx\Start\Module\ClassName'
+                "method_name" =>  "ClassMethod" //TODO: имя метода
             ],
         ];
     }
@@ -54,7 +62,7 @@ class mderrdx_start_module extends CModule
         //$this->InstallFiles();
         }
 
-        $APPLICATION->IncludeAdminFile(Loc::getMessage("ACADEMY_D7_INSTALL_TITLE"), $this->GetPath() ."/install/step.php");
+        $APPLICATION->IncludeAdminFile(Loc::getMessage("MESSAGE_TITLE"), $this->GetPath() ."/install/step.php");
     }
 
     public function DoUninstall()
@@ -87,7 +95,7 @@ class mderrdx_start_module extends CModule
    
     }
 
-    public function checkDependens(): bool
+    private function checkDependens(): bool
     {
         global $APPLICATION;
         foreach ($this->getModuleDependens() as $name => $version) {
@@ -104,7 +112,7 @@ class mderrdx_start_module extends CModule
         return true;
     }
 
-    public function InstallDB() : void
+    private function InstallDB() : void
     {
         Loader::includeModule($this->MODULE_ID);
         $form = new \Mderrdx\Form\IBlock();
@@ -113,14 +121,14 @@ class mderrdx_start_module extends CModule
         $form->AddProp($id);
     }
 
-    public function UnInstallDB() : void
+    private function UnInstallDB() : void
     {
         Loader::includeModule($this->MODULE_ID);
         $form = new \Mderrdx\Form\IBlock();
         $form->DelIblock();
     }
 
-    public function InstallFiles()
+    private function InstallFiles()
     {
         CopyDirFiles(
             $this->GetPath() . '/install/components',
@@ -131,21 +139,12 @@ class mderrdx_start_module extends CModule
         return true;
     }
 
-    public function UnInstallFiles() 
+    private function UnInstallFiles() 
     {
         \Bitrix\Main\IO\Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/mderrdx/');
     }
 
-    public function GetPath($notDocumentRoot=false)
-    {
-        if($notDocumentRoot) {
-            return str_ireplace(Application::getDocumentRoot(), '', dirname(__DIR__));
-        } else {
-            return dirname(__DIR__);
-        }
-    }
-
-    public function InstallEvents()
+    private function InstallEvents()
     {
         $eventManager = EventManager::getInstance();
         foreach($this->moduleEvents() as $event)
@@ -160,7 +159,7 @@ class mderrdx_start_module extends CModule
         }
     }
 
-    public function UnInstallEvents()
+    private function UnInstallEvents()
     {
         $eventManager = EventManager::getInstance();
         foreach($this->moduleEvents() as $event)
@@ -172,6 +171,15 @@ class mderrdx_start_module extends CModule
                 $event["class_name"],
                 $event["method_name"]
             );
+        }
+    }
+
+    private function GetPath($notDocumentRoot=false)
+    {
+        if($notDocumentRoot) {
+            return str_ireplace(Application::getDocumentRoot(), '', dirname(__DIR__));
+        } else {
+            return dirname(__DIR__);
         }
     }
 }
