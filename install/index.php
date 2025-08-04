@@ -104,7 +104,7 @@ class mderrdx_start_module extends CModule
                 return false;
             }
             if (!CheckVersion(ModuleManager::getVersion($name), $version)) {
-                $APPLICATION->throwException('Module: ' . $name . ' low version: '. $version);
+                $APPLICATION->throwException('Module: ' . $name . ' below version: '. $version);
                 return false;
             }
         }
@@ -112,7 +112,7 @@ class mderrdx_start_module extends CModule
         return true;
     }
 
-    private function InstallDB() : void
+    public function InstallDB() : void
     {
         Loader::includeModule($this->MODULE_ID);
         $form = new \Mderrdx\Form\IBlock();
@@ -121,14 +121,14 @@ class mderrdx_start_module extends CModule
         $form->AddProp($id);
     }
 
-    private function UnInstallDB() : void
+    public function UnInstallDB() : void
     {
         Loader::includeModule($this->MODULE_ID);
         $form = new \Mderrdx\Form\IBlock();
         $form->DelIblock();
     }
 
-    private function InstallFiles()
+    public function InstallFiles()
     {
         CopyDirFiles(
             $this->GetPath() . '/install/components',
@@ -139,12 +139,12 @@ class mderrdx_start_module extends CModule
         return true;
     }
 
-    private function UnInstallFiles() 
+    public function UnInstallFiles() 
     {
         \Bitrix\Main\IO\Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/mderrdx/');
     }
 
-    private function InstallEvents()
+    public function InstallEvents()
     {
         $eventManager = EventManager::getInstance();
         foreach($this->moduleEvents() as $event)
@@ -159,7 +159,7 @@ class mderrdx_start_module extends CModule
         }
     }
 
-    private function UnInstallEvents()
+    public function UnInstallEvents()
     {
         $eventManager = EventManager::getInstance();
         foreach($this->moduleEvents() as $event)
